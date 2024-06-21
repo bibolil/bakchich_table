@@ -6,7 +6,11 @@ import { people } from "@/people";
 type Props = {};
 
 const BakchichDataTable = (props: Props) => {
-  return <DataTable columns={columns} data={people}></DataTable>;
+  return (
+    <div className="container py-10 mx-auto">
+      <DataTable columns={columns} data={people}></DataTable>
+    </div>
+  );
 };
 
 export default BakchichDataTable;
