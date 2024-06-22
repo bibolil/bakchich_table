@@ -1,20 +1,14 @@
+"use server";
+
 import { Person } from "./definitions";
 import pool from "./postgres";
-import { people } from "@/people";
+
 export async function addPeople(people: Person[]) {
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
-    console.log("people", people[0], [
-      people[0].firstname,
-      people[0].lastname,
-      people[0].email,
-      people[0].gender,
-      people[0].dateofbirth,
-    ]);
     const insertedPeople = await Promise.all(
       people.map((person) => {
-        console.log("person", person);
         if (
           !person.firstname ||
           !person.lastname ||
@@ -52,11 +46,48 @@ export async function addPeople(people: Person[]) {
   }
 }
 
+export async function updatePerson(updateData: string[]) {
+  console.log("UPDATING", updateData);
+  const client = await pool.connect();
+  try {
+    const query = `
+    UPDATE people
+    SET firstname= $2
+    SET lastname= $3
+    SET gender= $4
+    SET dateofbirth= $5
+    WHERE id = $1
+    `;
+    const res = await client.query(query, [updateData]);
+    console.log(`updated person.`, res);
+    return true;
+  } catch (error) {
+    console.error("Failed to update person:", error);
+    return false;
+  } finally {
+    client.release();
+  }
+}
+
+export async function deletePeople(idArray: string[]) {
+  const client = await pool.connect();
+  try {
+    const query = `DELETE FROM people WHERE id = ANY($1);`;
+    const res = await client.query(query, [idArray]);
+    console.log(`Deleted ${res.rowCount} people.`);
+    return true;
+  } catch (error) {
+    console.error("Failed to delete people:", error);
+    return false;
+  } finally {
+    client.release();
+  }
+}
+
 export async function fetchPeople() {
   const client = await pool.connect();
   try {
     const result = await client.query("SELECT * FROM people limit 100");
-    console.log("Fetched people:", result.rows);
     return result.rows;
   } catch (error) {
     console.error("Failed to fetch people:", error);

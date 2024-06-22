@@ -3,9 +3,7 @@ import { DataTable } from "./data-table";
 import { columns } from "./columns";
 import { fetchPeople } from "@/lib/data";
 
-type Props = {};
-
-const BakchichDataTable = async (props: Props) => {
+const BakchichDataTable = async () => {
   const people = (await fetchPeople()) ?? [];
   return (
     <div className="container py-10 mx-auto">

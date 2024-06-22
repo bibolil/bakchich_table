@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import {
   ColumnDef,
   ColumnFiltersState,
+  RowSelection,
   RowSelectionState,
   SortingState,
   flexRender,
