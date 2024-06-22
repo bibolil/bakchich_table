@@ -13,7 +13,7 @@ export const columns: ColumnDef<Person>[] = [
       return (
         <Checkbox
           checked={table.getIsAllPageRowsSelected()}
-          onCheckedChange={(value) => {
+          onCheckedChange={(value: any) => {
             table.toggleAllPageRowsSelected(!!value);
           }}
         />
@@ -23,7 +23,7 @@ export const columns: ColumnDef<Person>[] = [
       return (
         <Checkbox
           checked={row.getIsSelected()}
-          onCheckedChange={(value) => {
+          onCheckedChange={(value: any) => {
             row.toggleSelected(!!value);
           }}
         />
@@ -41,7 +41,7 @@ export const columns: ColumnDef<Person>[] = [
             column.toggleSorting(column.getIsSorted() === "asc");
           }}
         >
-          Person ID
+          ID
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -49,39 +49,29 @@ export const columns: ColumnDef<Person>[] = [
     accessorKey: "id",
   },
   {
-    header: "First Name",
-    accessorKey: "firstName",
+    header: "firstname",
+    accessorKey: "firstname",
   },
   {
-    header: "Last Name",
-    accessorKey: "lastName",
+    header: "lastname",
+    accessorKey: "lastname",
   },
   {
-    header: "Email",
+    header: "email",
     accessorKey: "email",
   },
   {
-    header: "Gender",
+    header: "gender",
     accessorKey: "gender",
   },
   {
-    header: "Date of Birth",
-    accessorKey: "dateOfBirth",
-    cell: ({ row }) => {
-      const date_of_birth = row.getValue("dateOfBirth");
-      const formatted = new Date(date_of_birth as string).toLocaleDateString();
-      return React.createElement(
-        "div",
-        { className: "font-medium" },
-        formatted
-      );
-    },
+    header: "dateofbirth",
+    accessorKey: "dateofbirth",
   },
   {
     id: "actions",
     cell: ({ row }) => {
       const person = row.original;
-      const personId = person.id;
       return (
         <div className="flex gap-1">
           <Button>

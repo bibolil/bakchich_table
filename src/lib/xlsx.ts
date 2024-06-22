@@ -1,17 +1,16 @@
 import xlsx, { IJsonSheet } from "json-as-xlsx";
 import { people } from "@/people";
-
 export function downloadToExcel() {
   let columns: IJsonSheet[] = [
     {
       sheet: "Persons",
       columns: [
-        { label: "Person ID", value: "id" },
-        { label: "First Name", value: "firstName" },
-        { label: "Last Name", value: "lastName" },
-        { label: "Email", value: "email" },
-        { label: "Gender", value: "gender" },
-        { label: "Date of Birth", value: "dateOfBirth" },
+        { label: "id", value: "id" },
+        { label: "firstname", value: "firstname" },
+        { label: "lastname", value: "lastname" },
+        { label: "email", value: "email" },
+        { label: "gender", value: "gender" },
+        { label: "dateofbirth", value: "dateofbirth" },
       ],
       content: people,
     },

@@ -1,7 +1,6 @@
 "use client";
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
-
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -25,6 +24,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { downloadToExcel } from "@/lib/xlsx";
+import { isValidHeaderFormat } from "@/lib/utils";
+import { uploadCSV } from "@/lib/action";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -38,8 +39,9 @@ export function DataTable<TDATA, TValue>({
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+  const [people, setPeople] = useState(data);
   const table = useReactTable({
-    data,
+    data: people,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -57,6 +59,28 @@ export function DataTable<TDATA, TValue>({
     },
   });
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const uploadedFile = event.target.files?.[0] || null;
+    let header = "";
+    if (uploadedFile) {
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const s = reader.result as string;
+        header = s.split("\n")[0];
+        if (!isValidHeaderFormat(header)) {
+          alert("Invalid header format");
+          return;
+        }
+        console.log("data", s);
+        const dataUpload = await uploadCSV(s);
+        if (dataUpload) {
+          setPeople([...dataUpload, ...people]);
+        }
+      };
+      reader.readAsText(uploadedFile);
+    }
+  };
+
   return (
     <div>
       {/* input */}
@@ -64,14 +88,30 @@ export function DataTable<TDATA, TValue>({
         <Input
           placeholder="Filter First names"
           value={
-            (table.getColumn("firstName")?.getFilterValue() as string) || ""
+            (table.getColumn("firstname")?.getFilterValue() as string) || ""
           }
           onChange={(e) => {
-            table.getColumn("firstName")?.setFilterValue(e.target.value);
+            table.getColumn("firstname")?.setFilterValue(e.target.value);
           }}
           className="max-w-sm"
         />
-        {/*excel import button*/}
+        {/* except import */}
+        <div className="ml-4">
+          <Button
+            onClick={() => {
+              document.getElementById("csv")?.click();
+            }}
+          >
+            Upload
+          </Button>
+          <Input
+            id="csv"
+            type="file"
+            style={{ display: "none" }}
+            onInput={handleFileChange}
+          />
+        </div>
+        {/*excel export button*/}
         <Button className="ml-4" onClick={() => downloadToExcel()}>
           Export
         </Button>
