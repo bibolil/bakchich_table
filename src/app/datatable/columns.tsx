@@ -1,6 +1,5 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import { Person } from "@/people";
 import { ColumnDef } from "@tanstack/react-table";
 import React, { useRef, useState } from "react";
 import { ArrowUpDown, Trash2, Pencil, X } from "lucide-react";
@@ -13,6 +12,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Person } from "@/lib/definitions";
+import { dateFormatter } from "@/lib/utils";
 export const columns: ColumnDef<Person>[] = [
   {
     id: "select",
@@ -74,6 +75,20 @@ export const columns: ColumnDef<Person>[] = [
   {
     header: "dateofbirth",
     accessorKey: "dateofbirth",
+    cell: ({ getValue }) => {
+      const dateOfBirth = getValue() as string;
+      const date = new Date(dateOfBirth);
+      const formattedDate = `${date.getFullYear()}-${String(
+        date.getMonth() + 1
+      ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")} ${String(
+        date.getHours()
+      ).padStart(2, "0")}:${String(date.getMinutes()).padStart(
+        2,
+        "0"
+      )}:${String(date.getSeconds()).padStart(2, "0")}`;
+
+      return <span>{formattedDate}</span>;
+    },
   },
   {
     id: "actions",
@@ -140,16 +155,18 @@ export const columns: ColumnDef<Person>[] = [
                     <Button
                       onClick={async () => {
                         console.log("input values");
-
+                        let date = dateFormatter(
+                          new Date(dateOfBirthRef.current?.value || "")
+                        );
                         const updatedata: string[] = [
-                          row.getValue("id"),
                           firstnameRef.current?.value || "",
                           lastnameRef.current?.value || "",
                           genderRef.current?.value || "",
-                          dateOfBirthRef.current?.value || "",
+                          date,
+                          row.getValue("id"),
                         ];
                         /*test if not empty*/
-                        await updatePerson(updatedata);
+                        let updateperson = await updatePerson(updatedata);
                         setEditOpen(false);
                       }}
                     >

@@ -51,15 +51,17 @@ export async function updatePerson(updateData: string[]) {
   const client = await pool.connect();
   try {
     const query = `
-    UPDATE people
-    SET firstname= $2
-    SET lastname= $3
-    SET gender= $4
-    SET dateofbirth= $5
-    WHERE id = $1
+      UPDATE people
+      SET firstname = $1,
+          lastname = $2,
+          gender = $3,
+          dateofbirth = TO_TIMESTAMP($4, 'YYYY-MM-DD HH24:MI:SS') 
+      WHERE id = $5;
     `;
-    const res = await client.query(query, [updateData]);
-    console.log(`updated person.`, res);
+    // Make sure the `updateData` array contains elements in the correct order:
+    // [firstname, lastname, email, gender, dateofbirth, id]
+    const res = await client.query(query, updateData);
+    console.log("updated person.", res);
     return true;
   } catch (error) {
     console.error("Failed to update person:", error);
